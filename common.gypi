@@ -1,3 +1,5 @@
+# 这个文件中信息量很大。
+
 {
   'variables': {
     'target_arch%': 'ia32',          # set v8's target architecture
@@ -6,12 +8,20 @@
     'msvs_multi_core_compile': '0',  # we do enable multicore compiles, but not using the V8 way
   },
 
+  # target默认配置。
   'target_defaults': {
+    # 默认配置。
     'default_configuration': 'Debug',
+
+    # 配置。
     'configurations': {
+      # Debug。
       'Debug': {
         'defines': [ 'DEBUG', '_DEBUG' ],
         'cflags': [ '-g' ],
+
+        # VC配置。
+        # 目前忽略……
         'msvs_settings': {
           'VCCLCompilerTool': {
             'target_conditions': [
@@ -30,21 +40,32 @@
             'LinkIncremental': 2, # enable incremental linking
           },
         },
+
+        # XCode配置。
+        # 重点看。
         'xcode_settings': {
           'GCC_OPTIMIZATION_LEVEL': '0',
           'OTHER_CFLAGS': [ '-Wno-strict-aliasing' ],
         },
+
+        # 其他编译器配置。
         'conditions': [
           ['OS != "os390"', {
             'cflags': [ '-O0', '-fwrapv' ]
           }],
+
+          # Android平台。
+          # 重点看。
           ['OS == "android"', {
             'cflags': [ '-fPIE' ],
             'ldflags': [ '-fPIE', '-pie' ]
           }]
         ]
       },
+
+      # Release。
       'Release': {
+        # 编译器配置。
         'defines': [ 'NDEBUG' ],
         'cflags': [
           '-O3',
@@ -53,6 +74,9 @@
           '-fdata-sections',
           '-ffunction-sections',
         ],
+
+        # VC配置。
+        # 目前先跳过。
         'msvs_settings': {
           'VCCLCompilerTool': {
             'target_conditions': [
@@ -82,8 +106,12 @@
             'LinkIncremental': 1, # disable incremental linking
           },
         },
+
       }
-    },
+    },  # ~configurations。
+
+    # VC配置。
+    # 目前先忽略。
     'msvs_settings': {
       'VCCLCompilerTool': {
         'StringPooling': 'true', # pool string literals
@@ -112,7 +140,10 @@
         ],
       },
     },
+
+    # 平台配置。
     'conditions': [
+      # Windows平台，目前先忽略。
       ['OS == "win"', {
         'msvs_cygwin_shell': 0, # prevent actions from trying to use cygwin
         'defines': [
@@ -130,15 +161,20 @@
           }]
         ]
       }],
+
+      # Android平台在其中。
       ['OS in "freebsd dragonflybsd linux openbsd solaris android"', {
         'cflags': [ '-Wall' ],
         'cflags_cc': [ '-fno-rtti', '-fno-exceptions' ],
+
         'target_conditions': [
           ['_type=="static_library"', {
             'standalone_static_library': 1, # disable thin archive which needs binutils >= 2.19
           }],
         ],
+
         'conditions': [
+          # CPU架构。
           [ 'host_arch != target_arch and target_arch=="ia32"', {
             'cflags': [ '-m32' ],
             'ldflags': [ '-m32' ],
@@ -147,6 +183,7 @@
             'cflags': [ '-mx32' ],
             'ldflags': [ '-mx32' ],
           }],
+
           [ 'OS=="linux"', {
             'cflags': [ '-ansi' ],
           }],
@@ -154,13 +191,19 @@
             'cflags': [ '-pthreads' ],
             'ldflags': [ '-pthreads' ],
           }],
+
+          # OSX iOS在其中。
           [ 'OS not in "solaris android os390"', {
             'cflags': [ '-pthread' ],
             'ldflags': [ '-pthread' ],
           }],
         ],
       }],
+
+      # Mac平台。
+      # 重点看。
       ['OS=="mac"', {
+        # Xcode。
         'xcode_settings': {
           'ALWAYS_SEARCH_USER_PATHS': 'NO',
           'GCC_CW_ASM_SYNTAX': 'NO',                # No -fasm-blocks
@@ -182,6 +225,7 @@
             '-Wno-unused-parameter',
           ],
         },
+
         'conditions': [
           ['target_arch=="ia32"', {
             'xcode_settings': {'ARCHS': ['i386']},
@@ -190,12 +234,14 @@
             'xcode_settings': {'ARCHS': ['x86_64']},
           }],
         ],
+
         'target_conditions': [
           ['_type!="static_library"', {
             'xcode_settings': {'OTHER_LDFLAGS': ['-Wl,-search_paths_first']},
           }],
         ],
       }],
+
      ['OS=="solaris"', {
        'cflags': [ '-fno-omit-frame-pointer' ],
        # pull in V8's postmortem metadata

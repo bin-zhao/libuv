@@ -1,4 +1,5 @@
 {
+  # default target setting.
   'target_defaults': {
     'conditions': [
       ['OS != "win"', {
@@ -41,16 +42,25 @@
     }
   },
 
+  # define all targets
+  # 一共有3个target，只看第一个就行。
   'targets': [
+    # libuv库target。
     {
       'target_name': 'libuv',
       'type': '<(uv_library)',
+      # 头文件包含目录。
+      # include也是导出目录。
       'include_dirs': [
         'include',
         'src/',
       ],
+
       'direct_dependent_settings': {
+        # 这个体会得不深。
         'include_dirs': [ 'include' ],
+
+        # 不同平台上的宏定义。
         'conditions': [
           ['OS != "win"', {
             'defines': [
@@ -58,16 +68,21 @@
               '_FILE_OFFSET_BITS=64',
             ],
           }],
+
+          # 特别关注这个。
           ['OS in "mac ios"', {
             'defines': [ '_DARWIN_USE_64_BIT_INODE=1' ],
           }],
+
           ['OS == "linux"', {
             'defines': [ '_POSIX_C_SOURCE=200112' ],
           }],
         ],
       },
+
+      # 要编译的代码。
       'sources': [
-        'common.gypi',
+        'common.gypi',    # 这个文件信息量很大。
         'include/uv.h',
         'include/tree.h',
         'include/uv-errno.h',
@@ -82,7 +97,9 @@
         'src/uv-common.h',
         'src/version.c'
       ],
+
       'conditions': [
+        # Windows平台，暂时忽略。
         [ 'OS=="win"', {
           'defines': [
             '_WIN32_WINNT=0x0600',
@@ -198,9 +215,12 @@
             }],
           ],
         }],
+
+        # Mac, iOS, Android。
         [ 'OS in "linux mac ios android os390"', {
           'sources': [ 'src/unix/proctitle.c' ],
         }],
+
         [ 'OS != "os390"', {
           'cflags': [
             '-fvisibility=hidden',
@@ -212,6 +232,8 @@
             '-Wno-unused-parameter',
           ],
         }],
+
+        # Mac, iOS。
         [ 'OS in "mac ios"', {
           'sources': [
             'src/unix/darwin.c',
@@ -219,16 +241,20 @@
             'src/unix/darwin-proctitle.c',
             'src/unix/pthread-barrier.c'
           ],
+
           'defines': [
             '_DARWIN_USE_64_BIT_INODE=1',
             '_DARWIN_UNLIMITED_SELECT=1',
           ]
         }],
+
+        # iOS, Android包含在其中。
         [ 'OS!="mac" and OS!="os390"', {
           # Enable on all platforms except OS X. The antique gcc/clang that
           # ships with Xcode emits waaaay too many false positives.
           'cflags': [ '-Wstrict-aliasing' ],
         }],
+
         [ 'OS=="linux"', {
           'defines': [ '_GNU_SOURCE' ],
           'sources': [
@@ -241,6 +267,8 @@
             'libraries': [ '-ldl', '-lrt' ],
           },
         }],
+
+        # Android平台。
         [ 'OS=="android"', {
           'sources': [
             'src/unix/linux-core.c',
@@ -251,10 +279,12 @@
             'src/unix/android-ifaddrs.c',
             'src/unix/pthread-barrier.c'
           ],
+
           'link_settings': {
             'libraries': [ '-ldl' ],
           },
         }],
+
         [ 'OS=="solaris"', {
           'sources': [ 'src/unix/sunos.c' ],
           'defines': [
@@ -300,15 +330,20 @@
           },
           'sources': [ 'src/unix/posix-hrtime.c' ],
         }],
+
+        # Mac, iOS包含在里面。
         [ 'OS in "ios mac freebsd dragonflybsd openbsd netbsd".split()', {
           'sources': [
             'src/unix/bsd-ifaddrs.c',
             'src/unix/kqueue.c',
           ],
         }],
+
+        # 动态库。
         ['uv_library=="shared_library"', {
           'defines': [ 'BUILDING_UV_SHARED=1' ]
         }],
+
         ['OS=="os390"', {
           'sources': [
             'src/unix/pthread-fixes.c',
@@ -320,6 +355,12 @@
       ]
     },
 
+    ############################################################################
+    # 下面的不用看。~END
+    ############################################################################
+
+    # target run-tests
+    # ignore it...
     {
       'target_name': 'run-tests',
       'type': 'executable',
@@ -519,6 +560,8 @@
       },
     },
 
+    # target run-benchmarks
+    # ignore it...
     {
       'target_name': 'run-benchmarks',
       'type': 'executable',

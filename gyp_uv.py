@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# -*- coding: utf-8 -*-
+
+'''
+  gyp_uv.py
+'''
+
 import os
 import platform
 import sys
@@ -26,6 +32,7 @@ except ImportError:
 
 def host_arch():
   machine = platform.machine()
+  print '+++++++++++++++++++++', machine
   if machine == 'i386': return 'ia32'
   if machine == 'AMD64': return 'x64'
   if machine == 'x86_64': return 'x64'
@@ -35,7 +42,11 @@ def host_arch():
 
 
 def run_gyp(args):
+  # 入口。
+  print '++++++++++++++++++++++'
   rc = gyp.main(args)
+  print '++++++++++++++++++++++'
+
   if rc != 0:
     print('Error running GYP')
     sys.exit(rc)
@@ -90,5 +101,8 @@ if __name__ == '__main__':
     args.append('--no-parallel')
 
   gyp_args = list(args)
-  print(gyp_args)
+  print '+++++++++++++++++++++++'
+  for arg in gyp_args:
+    print '++ ', arg
+  print '+++++++++++++++++++++++'
   run_gyp(gyp_args)

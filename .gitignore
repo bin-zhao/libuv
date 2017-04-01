@@ -41,7 +41,8 @@ Makefile.in
 *.target.mk
 
 /out/
-/build/gyp
+/build/*
+!/build/gyp
 /android-toolchain/
 
 /test/.libs/
